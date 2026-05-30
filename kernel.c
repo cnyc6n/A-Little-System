@@ -1,6 +1,6 @@
 #include "init_idt.h"
 #include "irq.h"
-#include "keyboard.h"
+#include "driver/keyboard.h"
 
 void kernel_main(void)
 {
