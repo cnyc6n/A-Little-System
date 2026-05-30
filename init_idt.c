@@ -1,9 +1,5 @@
 #include "irq.h"
 
-extern void irq_stub_0(void);
-extern void irq_stub_1(void);
-extern void irq_stub_12(void);
-
 /* ---------- 默认异常处理 ---------- */
 static void default_exception_handler(void) {
     /* CPU 异常发生时安全停机，避免跳转空指针导致三重故障 */
@@ -59,7 +55,7 @@ void init_idt(void) {
     for (int i = 0; i < 32; i++)
         idt_set_gate(i, (uint32_t)default_exception_handler);
 
-    /* IRQ 中断门 */
+    /* IRQ 中断门（irq_stub_* 声明已统一在 irq.h 中） */
     idt_set_gate(IRQ_BASE + IRQ_TIMER,    (uint32_t)irq_stub_0);
     idt_set_gate(IRQ_BASE + IRQ_KEYBOARD, (uint32_t)irq_stub_1);
     idt_set_gate(IRQ_BASE + IRQ_MOUSE,    (uint32_t)irq_stub_12);
