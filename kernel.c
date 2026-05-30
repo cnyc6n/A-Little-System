@@ -1,24 +1,17 @@
 #include "init_idt.h"
 #include "irq.h"
-#include "driver/keyboard.h"
+#include "keyboard.h"
 
 void kernel_main(void)
 {
-    /* 1️⃣ 先关中断（防御性） */
-    __asm__ volatile("cli");
+    init_idt();                          /* 初始化 IDT 和 PIC */
 
-    /* 2️⃣ 初始化 IDT + PIC（已修复：init_idt 内部已调用 init_pic，无需重复） */
-    init_idt();
+    irq_install(IRQ_KEYBOARD, keyboard_handler);  /* 注册键盘中断 */
+    irq_enable(IRQ_KEYBOARD);                    /* 启用键盘中断 */
 
-    /* 3️⃣ 注册 IRQ 回调 */
-    irq_install(IRQ_KEYBOARD, keyboard_irq);
+    __asm__ volatile("sti");             /* 开中断 */
 
-    /* 4️⃣ 开 IRQ（PIC 层面） */
-    irq_enable(IRQ_KEYBOARD);
-
-    /* 5️⃣ 最后才开中断 */
-    __asm__ volatile("sti");
-
-    while (1)
+    while (1) {
         __asm__ volatile("hlt");
+    }
 }
