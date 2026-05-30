@@ -40,7 +40,7 @@ irq_common:
     mov fs, ax
     mov gs, ax
 
-    mov eax, [esp + 32]   ; IRQ 号
+    mov eax, [esp + 48]   ; IRQ 号（已修复：pusha=32 + ds/es/fs/gs=8 + IRQ号push=4 → 偏移44+4=48）
     push eax
     call irq_dispatch
     add esp, 4
@@ -48,7 +48,7 @@ irq_common:
     ; EOI
     mov al, 0x20
     out 0x20, al
-    cmp byte [esp + 32], 8
+    cmp byte [esp + 48], 8   ; 已修复：同上偏移量
     jbe .pic1
     out 0xA0, al
 
